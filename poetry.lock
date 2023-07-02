@@ -374,6 +374,21 @@ files = [
 ]
 
 [[package]]
+name = "humanize"
+version = "4.7.0"
+description = "Python humanize utilities"
+category = "main"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "humanize-4.7.0-py3-none-any.whl", hash = "sha256:df7c429c2d27372b249d3f26eb53b07b166b661326e0325793e0a988082e3889"},
+    {file = "humanize-4.7.0.tar.gz", hash = "sha256:7ca0e43e870981fa684acb5b062deb307218193bca1a01f2b2676479df849b3a"},
+]
+
+[package.extras]
+tests = ["freezegun", "pytest", "pytest-cov"]
+
+[[package]]
 name = "idna"
 version = "3.4"
 description = "Internationalized Domain Names in Applications (IDNA)"
@@ -584,4 +599,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "e41e33df04cd01969cc820021322a9f09dbf8e283aa8eabb06463a1813164db5"
+content-hash = "8f568aa9020af564fc68ec33d599a9eeb0c97609efe236672c95cde9d8999e98"
