@@ -26,9 +26,15 @@ class ApplicationRepository(BaseRepository):
             with session.begin():
                 session.execute(statement)
 
-    def count_by_departments(self):
+    def aggregated_statistics_by_departments(self):
         statement = (
-            select(Department.name, func.count(Application.id))
+            select(
+                Department.name,
+                func.count(Application.id),
+                func.min(Application.exams_score),
+                func.max(Application.exams_score),
+                func.avg(Application.exams_score),
+            )
             .join(
                 Department,
                 onclause=Application.department_id == Department.id,
@@ -38,4 +44,13 @@ class ApplicationRepository(BaseRepository):
         )
         with self._session_factory() as session:
             rows = session.execute(statement).all()
-        return rows
+        return [
+            models.ApplicationStatistics(
+                department_name=department_name,
+                applicants_count=applications_count,
+                min_exams_score=min_exams_score,
+                max_exams_score=max_exams_score,
+                average_exams_score=average_exams_score,
+            ) for department_name, applications_count,
+            min_exams_score, max_exams_score, average_exams_score in rows
+        ]

@@ -3,7 +3,7 @@ from datetime import datetime
 
 from models.rating import Rating
 
-__all__ = ('Application', 'ApplicationRow')
+__all__ = ('Application', 'ApplicationRow', 'ApplicationStatistics',)
 
 
 @dataclass(frozen=True, slots=True)
@@ -24,3 +24,12 @@ class ApplicationRow:
     exams_score: float
     additional_score: float
     rating: int
+
+
+@dataclass(frozen=True, slots=True)
+class ApplicationStatistics:
+    department_name: str
+    applicants_count: int
+    min_exams_score: float
+    max_exams_score: float
+    average_exams_score: float
