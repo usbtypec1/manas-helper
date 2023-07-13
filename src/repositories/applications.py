@@ -40,7 +40,7 @@ class ApplicationRepository(BaseRepository):
                 onclause=Application.department_id == Department.id,
             )
             .group_by(Application.department_id)
-            .order_by(func.count(Application.id).desc())
+            .order_by(Department.name.asc())
         )
         with self._session_factory() as session:
             rows = session.execute(statement).all()
