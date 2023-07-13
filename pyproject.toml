@@ -9,7 +9,11 @@ packages = [{include = "manas_exams_countdown"}]
 [tool.poetry.dependencies]
 python = "^3.11"
 aiogram = "^2.25.1"
-humanize = "^4.7.0"
+httpx = "^0.24.1"
+bs4 = "^0.0.1"
+lxml = "^4.9.3"
+sqlalchemy = "^2.0.18"
+apscheduler = "^3.10.1"
 
 
 [build-system]
