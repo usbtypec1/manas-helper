@@ -33,7 +33,6 @@ class ApplicationExamScoresStatisticsView(View):
                 f' | {application_statistics_by_group.max_exams_score}'
                 f' | {application_statistics_by_group.average_exams_score:.2f}'
             )
-            total_count += application_statistics_by_group.applicants_count
         lines.append(
             f'<b>Максимальный балл: {max_score}</b>\n'
             f'<b>Минимальный балл: {min_score}</b>'
