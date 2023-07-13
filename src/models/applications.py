@@ -9,6 +9,7 @@ __all__ = (
     'ApplicationRow',
     'ApplicationStatistics',
     'DepartmentRatings',
+    'ApplicationsCountByDepartment',
 )
 
 
@@ -40,7 +41,12 @@ class DepartmentRatings:
 @dataclass(frozen=True, slots=True)
 class ApplicationStatistics:
     department_name: str
-    applicants_count: int
     min_exams_score: float
     max_exams_score: float
     average_exams_score: float
+
+
+@dataclass(frozen=True, slots=True)
+class ApplicationsCountByDepartment:
+    department_name: str
+    count: int

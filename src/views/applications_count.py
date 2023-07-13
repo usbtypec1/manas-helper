@@ -10,18 +10,22 @@ class ApplicationsCountView(View):
 
     def __init__(
             self,
-            applications_statistics: Iterable[models.ApplicationStatistics],
+            applications_count_by_departments: (
+                    Iterable[models.ApplicationsCountByDepartment]
+            ),
     ):
-        self.__applications_statistics = applications_statistics
+        self.__applications_count_by_departments = (
+            applications_count_by_departments
+        )
 
     def get_text(self) -> str:
         lines = ['<b>Факультет - количество людей</b>']
         total_count = 0
-        for application_statistics_by_group in self.__applications_statistics:
+        for department_applications in self.__applications_count_by_departments:
             lines.append(
-                f'📍 {application_statistics_by_group.department_name}'
-                f' - {application_statistics_by_group.applicants_count}'
+                f'📍 {department_applications.department_name}'
+                f' - {department_applications.count}'
             )
-            total_count += application_statistics_by_group.applicants_count
+            total_count += department_applications.count
         lines.append(f'<b>Общее количество: {total_count}</b>')
         return '\n'.join(lines)

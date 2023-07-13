@@ -4,6 +4,7 @@ from aiogram import Bot, Dispatcher, executor
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.types import ParseMode
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from apscheduler.triggers.cron import CronTrigger
 from apscheduler.triggers.interval import IntervalTrigger
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -44,7 +45,7 @@ def main() -> None:
     scheduler = AsyncIOScheduler()
     scheduler.add_job(
         make_snapshot,
-        IntervalTrigger(minutes=5),
+        CronTrigger(minute='*'),
         args=(department_repository, application_repository)
     )
     scheduler.start()

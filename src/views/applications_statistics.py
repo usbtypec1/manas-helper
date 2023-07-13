@@ -21,12 +21,13 @@ class ApplicationExamScoresStatisticsView(View):
             for application_statistics_by_group in
             self.__applications_statistics
         )
-        min_score = max(
+        min_score = min(
             application_statistics_by_group.min_exams_score
             for application_statistics_by_group in
             self.__applications_statistics
         )
-        for application_statistics_by_group in self.__applications_statistics:
+        statistics = sorted(self.__applications_statistics, key=lambda x: x.department_name)
+        for application_statistics_by_group in statistics:
             lines.append(
                 f'📍 {application_statistics_by_group.department_name}'
                 f' - {application_statistics_by_group.min_exams_score}'

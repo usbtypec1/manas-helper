@@ -18,6 +18,7 @@ class DepartmentRepository(BaseRepository):
             department_models.Department(
                 id=department.id,
                 name=department.name,
+                quota=department.quota,
             ) for department in departments
         ]
 

@@ -10,7 +10,7 @@ __all__ = ('ApplicationRepository',)
 
 class ApplicationRepository(BaseRepository):
 
-    def create(self, application: models.ApplicationRow):
+    def create(self, department_id: int, application: models.ApplicationRow):
         statement = (
             insert(Application)
             .values(
@@ -18,7 +18,7 @@ class ApplicationRepository(BaseRepository):
                 applied_at=application.applied_at,
                 exams_score=application.exams_score,
                 additional_score=application.additional_score,
-                department_id=application.department_id,
+                department_id=department_id,
             )
             .on_conflict_do_nothing(index_elements=('id',))
         )
@@ -26,19 +26,38 @@ class ApplicationRepository(BaseRepository):
             with session.begin():
                 session.execute(statement)
 
+    def count_by_departments(
+            self,
+    ) -> list[models.ApplicationsCountByDepartment]:
+        statement = (
+            select(Department.name, func.count(Application.id))
+            .join(
+                Department,
+                onclause=Application.department_id == Department.id,
+            )
+            .group_by(Application.department_id)
+            .order_by(Application.exams_score.desc())
+        )
+        with self._session_factory() as session:
+            rows = session.execute(statement).all()
+        return [
+            models.ApplicationsCountByDepartment(
+                department_name=department_name,
+                count=applications_count,
+            ) for department_name, applications_count in rows
+        ]
+
     def aggregated_statistics_by_department(
             self,
             department_id: int,
             *,
             limit: int | None = None,
-    ):
+    ) -> tuple[tuple[str, float], ...]:
+        select()
         statement = (
             select(
                 Department.name,
-                func.count(Application.id),
-                func.min(Application.exams_score),
-                func.max(Application.exams_score),
-                func.avg(Application.exams_score),
+                Application.exams_score,
             )
             .where(Department.id == department_id)
             .join(
@@ -51,13 +70,4 @@ class ApplicationRepository(BaseRepository):
             statement = statement.limit(limit)
         with self._session_factory() as session:
             rows = session.execute(statement).all()
-        return [
-            models.ApplicationStatistics(
-                department_name=department_name,
-                applicants_count=applications_count,
-                min_exams_score=min_exams_score,
-                max_exams_score=max_exams_score,
-                average_exams_score=average_exams_score,
-            ) for department_name, applications_count,
-            min_exams_score, max_exams_score, average_exams_score in rows
-        ]
+        return rows
