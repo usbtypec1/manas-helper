@@ -36,7 +36,10 @@ def main() -> None:
     department_repository = DepartmentRepository(session_factory)
     application_repository = ApplicationRepository(session_factory)
 
-    init_departments(department_repository)
+    executor.start(
+        future=init_departments(department_repository),
+        dispatcher=dispatcher,
+    )
 
     scheduler = AsyncIOScheduler()
     scheduler.add_job(

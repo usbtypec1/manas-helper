@@ -1,9 +1,15 @@
 from dataclasses import dataclass
 from datetime import datetime
 
+from models.departments import Department
 from models.rating import Rating
 
-__all__ = ('Application', 'ApplicationRow', 'ApplicationStatistics',)
+__all__ = (
+    'Application',
+    'ApplicationRow',
+    'ApplicationStatistics',
+    'DepartmentRatings',
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -18,12 +24,17 @@ class Application:
 
 @dataclass(frozen=True, slots=True)
 class ApplicationRow:
-    department_id: int
     applied_at: datetime
     applicant_id: str
     exams_score: float
     additional_score: float
     rating: int
+
+
+@dataclass(frozen=True, slots=True)
+class DepartmentRatings:
+    department: Department
+    application_rows: list[ApplicationRow]
 
 
 @dataclass(frozen=True, slots=True)

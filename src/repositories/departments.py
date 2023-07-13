@@ -21,10 +21,14 @@ class DepartmentRepository(BaseRepository):
             ) for department in departments
         ]
 
-    def create(self, id_: int, name: str):
+    def create(self, department: department_models.Department):
         statement = (
             insert(Department)
-            .values(id=id_, name=name)
+            .values(
+                id=department.id,
+                name=department.name,
+                quota=department.quota,
+            )
             .on_conflict_do_nothing(index_elements=['id'])
         )
         with self._session_factory() as session:

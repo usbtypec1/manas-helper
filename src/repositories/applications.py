@@ -26,7 +26,12 @@ class ApplicationRepository(BaseRepository):
             with session.begin():
                 session.execute(statement)
 
-    def aggregated_statistics_by_departments(self):
+    def aggregated_statistics_by_department(
+            self,
+            department_id: int,
+            *,
+            limit: int | None = None,
+    ):
         statement = (
             select(
                 Department.name,
@@ -35,13 +40,15 @@ class ApplicationRepository(BaseRepository):
                 func.max(Application.exams_score),
                 func.avg(Application.exams_score),
             )
+            .where(Department.id == department_id)
             .join(
                 Department,
                 onclause=Application.department_id == Department.id,
             )
-            .group_by(Application.department_id)
-            .order_by(Department.name.asc())
+            .order_by(Application.exams_score.desc())
         )
+        if limit is not None:
+            statement = statement.limit(limit)
         with self._session_factory() as session:
             rows = session.execute(statement).all()
         return [

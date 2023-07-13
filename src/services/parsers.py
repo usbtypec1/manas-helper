@@ -5,11 +5,21 @@ from bs4 import BeautifulSoup
 import models
 
 
-def parse_ratings_page(
-        department_id: int,
-        html: str,
-) -> list[models.ApplicationRow]:
-    soup = BeautifulSoup(html, 'lxml')
+def parse_quota_in_ratings_page(soup: BeautifulSoup) -> int:
+    for p in soup.find_all('p'):
+        if 'КВОТА' in p.text:
+            parts = p.text.strip().split('КВОТА: ')
+            if not parts:
+                continue
+            quota = parts[-1]
+            if not quota.isdigit():
+                continue
+            return int(quota)
+
+    raise ValueError('Quota number is not found in ratings page')
+
+
+def parse_rating_rows(soup: BeautifulSoup) -> list[models.ApplicationRow]:
     applications: list[models.ApplicationRow] = []
     for tr in soup.find('table').find_all('tr')[1:]:
         tds = tr.find_all('td')
@@ -19,7 +29,6 @@ def parse_ratings_page(
         additional_score = float(tds[3].text)
         applied_at = datetime.strptime(tds[4].text, '%d/%m/%Y %H:%M:%S')
         applications.append(models.ApplicationRow(
-            department_id=department_id,
             applied_at=applied_at,
             rating=rating,
             applicant_id=applicant_id,
@@ -29,8 +38,25 @@ def parse_ratings_page(
     return applications
 
 
-def parse_departments_page(html: str) -> list[models.Department]:
-    departments: list[models.Department] = []
+def parse_ratings_page(
+        department: models.DepartmentIDAndName,
+        html: str,
+) -> models.DepartmentRatings:
+    soup = BeautifulSoup(html, 'lxml')
+    rows = parse_rating_rows(soup)
+    quota = parse_quota_in_ratings_page(soup)
+    return models.DepartmentRatings(
+        department=models.Department(
+            id=department.id,
+            name=department.name,
+            quota=quota,
+        ),
+        application_rows=rows,
+    )
+
+
+def parse_departments_page(html: str) -> list[models.DepartmentIDAndName]:
+    departments: list[models.DepartmentIDAndName] = []
 
     table = BeautifulSoup(html, 'lxml')
     for a in table.find_all('a'):
@@ -39,7 +65,7 @@ def parse_departments_page(html: str) -> list[models.Department]:
             department_name = a.text
 
             departments.append(
-                models.Department(
+                models.DepartmentIDAndName(
                     id=department_id,
                     name=department_name,
                 ),
