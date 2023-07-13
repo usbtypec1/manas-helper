@@ -6,15 +6,16 @@ from repositories import ApplicationRepository
 
 __all__ = ('register_handlers',)
 
+from views import ApplicationsCountView
+
 
 async def on_show_applications_count(
         message: Message,
         application_repository: ApplicationRepository,
 ) -> None:
-    applications_count = application_repository.count()
-    await message.reply(
-        f'Уже <b>{applications_count}</b> человек кинули свои талоны'
-    )
+    applications_by_departments = application_repository.count_by_departments()
+    view = ApplicationsCountView(applications_by_departments)
+    await message.reply(view.get_text())
 
 
 def register_handlers(dispatcher: Dispatcher) -> None:
