@@ -1,6 +1,9 @@
 from aiogram import Dispatcher
-from aiogram.dispatcher.filters import Command, Text
-from aiogram.types import CallbackQuery, Message, ChatType
+from aiogram.dispatcher.filters import Command, Text, CommandStart
+from aiogram.types import (
+    CallbackQuery, Message, ChatType,
+    InlineKeyboardMarkup, InlineKeyboardButton
+)
 
 from callback_data import ToggleRouteCallbackData
 from repositories import RouteRepository, DepartmentRepository
@@ -93,11 +96,24 @@ async def on_disable_all(
     )
 
 
+async def on_settings_in_group(message: Message):
+    me = await Dispatcher.get_current().bot.get_me()
+    url = f'https://t.me/{me.username}?start=settings'
+    await message.reply('Данный функционал работает только в ЛС', reply_markup=InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton('GO 🚀', url=url)
+            ]
+        ]
+    ))
+
+
 def register_handlers(dispatcher: Dispatcher) -> None:
     dispatcher.register_message_handler(
         on_show_toggle_menu,
-        Command('settings'),
+        Command('settings') | CommandStart(deep_link='settings'),
         state='*',
+        chat_type=ChatType.PRIVATE
     )
     dispatcher.register_callback_query_handler(
         on_toggle_route,
@@ -116,4 +132,10 @@ def register_handlers(dispatcher: Dispatcher) -> None:
         Text('disable-all'),
         state='*',
         chat_type=ChatType.PRIVATE,
+    )
+    dispatcher.register_message_handler(
+        on_settings_in_group,
+        Command('settings'),
+        state='*',
+        chat_type=[ChatType.GROUP, ChatType.SUPERGROUP],
     )
