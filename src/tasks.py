@@ -49,13 +49,15 @@ async def make_snapshot(
                 chat_ids = route_repository.get_chat_ids_by_department_id(
                     department_rating.department.id
                 )
+                try:
+                    await bot.send_message(-1001551198132, text,
+                                           message_thread_id=261318)
+                except TelegramAPIError:
+                    pass
+                finally:
+                    await asyncio.sleep(0.5)
+
                 for chat_id in chat_ids:
-                    try:
-                        await bot.send_message(-1001551198132, text, message_thread_id=261318)
-                    except TelegramAPIError:
-                        pass
-                    finally:
-                        await asyncio.sleep(0.5)
                     try:
                         await bot.send_message(chat_id, text)
                     except TelegramAPIError:
