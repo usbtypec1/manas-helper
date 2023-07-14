@@ -19,13 +19,19 @@ class ApplicationsCountView(View):
         )
 
     def get_text(self) -> str:
-        lines = ['<b>Факультет - количество людей</b>']
+        lines = ['<b>Факультет - количество людей | квота на факультет</b>']
         total_count = 0
+        total_quota = 0
         for department_applications in self.__applications_count_by_departments:
+            has_positions = department_applications.count < department_applications.quota
+            icon = '☘️' if has_positions else '❌'
             lines.append(
                 f'📍 {department_applications.department_name}'
                 f' - {department_applications.count}'
+                f' | {department_applications.quota} {icon}'
             )
             total_count += department_applications.count
-        lines.append(f'<b>Общее количество: {total_count}</b>')
+            total_quota += department_applications.quota
+        lines.append(f'<b>Общее количество: {total_count}'
+                     f' | {total_quota}</b>')
         return '\n'.join(lines)

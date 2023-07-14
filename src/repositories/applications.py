@@ -30,13 +30,17 @@ class ApplicationRepository(BaseRepository):
             self,
     ) -> list[models.ApplicationsCountByDepartment]:
         statement = (
-            select(Department.name, func.count(Application.id))
+            select(
+                Department.name,
+                func.count(Application.id),
+                Department.quota,
+            )
             .join(
                 Department,
                 onclause=Application.department_id == Department.id,
             )
             .group_by(Application.department_id)
-            .order_by(Application.exams_score.desc())
+            .order_by(Department.name.asc())
         )
         with self._session_factory() as session:
             rows = session.execute(statement).all()
@@ -44,7 +48,8 @@ class ApplicationRepository(BaseRepository):
             models.ApplicationsCountByDepartment(
                 department_name=department_name,
                 count=applications_count,
-            ) for department_name, applications_count in rows
+                quota=quota,
+            ) for department_name, applications_count, quota in rows
         ]
 
     def aggregated_statistics_by_department(

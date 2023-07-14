@@ -50,3 +50,4 @@ class ApplicationStatistics:
 class ApplicationsCountByDepartment:
     department_name: str
     count: int
+    quota: int
