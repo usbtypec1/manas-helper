@@ -5,7 +5,6 @@ from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.types import ParseMode
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
-from apscheduler.triggers.interval import IntervalTrigger
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
@@ -13,7 +12,10 @@ import handlers
 from config import load_config
 from database.base import init_tables
 from middlewares import DependencyInjectMiddleware
-from repositories import DepartmentRepository, ApplicationRepository
+from repositories import (
+    DepartmentRepository, ApplicationRepository,
+    RouteRepository
+)
 from services.departments import init_departments
 from tasks import make_snapshot
 
@@ -36,6 +38,7 @@ def main() -> None:
 
     department_repository = DepartmentRepository(session_factory)
     application_repository = ApplicationRepository(session_factory)
+    route_repository = RouteRepository(session_factory)
 
     executor.start(
         future=init_departments(department_repository),
@@ -46,7 +49,12 @@ def main() -> None:
     scheduler.add_job(
         make_snapshot,
         CronTrigger(minute='*'),
-        args=(bot, department_repository, application_repository)
+        args=(
+            bot,
+            department_repository,
+            application_repository,
+            route_repository,
+        )
     )
     scheduler.start()
 
@@ -54,6 +62,7 @@ def main() -> None:
         DependencyInjectMiddleware(
             department_repository=department_repository,
             application_repository=application_repository,
+            route_repository=route_repository,
         ),
     )
 

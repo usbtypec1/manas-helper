@@ -53,12 +53,12 @@ async def on_show_top_applicants(
 def register_handlers(dispatcher: Dispatcher) -> None:
     dispatcher.register_message_handler(
         on_show_applications_count,
-        Command('count'),
+        Command(['count', 'applications_count']),
         state='*',
     )
     dispatcher.register_message_handler(
         on_show_exams_statistics,
-        Command('statistics'),
+        Command(['statistics', 'applications_statistics']),
         state='*',
     )
     dispatcher.register_message_handler(
