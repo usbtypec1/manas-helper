@@ -10,7 +10,8 @@ __all__ = ('ApplicationRepository',)
 
 class ApplicationRepository(BaseRepository):
 
-    def create(self, department_id: int, application: models.ApplicationRow):
+    def create(self, department_id: int,
+               application: models.ApplicationRow) -> bool:
         statement = (
             insert(Application)
             .values(
@@ -24,7 +25,8 @@ class ApplicationRepository(BaseRepository):
         )
         with self._session_factory() as session:
             with session.begin():
-                session.execute(statement)
+                result = session.execute(statement)
+        return bool(result.rowcount)
 
     def count_by_departments(
             self,

@@ -46,7 +46,7 @@ def main() -> None:
     scheduler.add_job(
         make_snapshot,
         CronTrigger(minute='*'),
-        args=(department_repository, application_repository)
+        args=(bot, department_repository, application_repository)
     )
     scheduler.start()
 
