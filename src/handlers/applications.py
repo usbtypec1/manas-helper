@@ -12,6 +12,8 @@ from views.applications_statistics import ApplicationExamScoresStatisticsView
 
 __all__ = ('register_handlers',)
 
+from views.top_applications import TopApplicationsView
+
 
 async def on_show_applications_count(
         message: Message,
@@ -39,14 +41,28 @@ async def on_show_exams_statistics(
     await message.reply(view.get_text())
 
 
+async def on_show_top_applicants(
+        message: Message,
+        application_repository: ApplicationRepository,
+) -> None:
+    top_applicants = application_repository.get_with_highest_exam_scores(50)
+    view = TopApplicationsView(top_applicants)
+    await message.reply(view.get_text())
+
+
 def register_handlers(dispatcher: Dispatcher) -> None:
     dispatcher.register_message_handler(
         on_show_applications_count,
-        Command('applications_count'),
+        Command('count'),
         state='*',
     )
     dispatcher.register_message_handler(
         on_show_exams_statistics,
-        Command('applications_statistics'),
+        Command('statistics'),
+        state='*',
+    )
+    dispatcher.register_message_handler(
+        on_show_top_applicants,
+        Command('top'),
         state='*',
     )

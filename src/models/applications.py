@@ -16,11 +16,11 @@ __all__ = (
 @dataclass(frozen=True, slots=True)
 class Application:
     department_id: int
+    department_name: str
     applied_at: datetime
     applicant_id: str
     exams_score: float
     additional_score: float
-    ratings: list[Rating]
 
 
 @dataclass(frozen=True, slots=True)

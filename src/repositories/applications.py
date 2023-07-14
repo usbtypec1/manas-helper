@@ -10,6 +10,32 @@ __all__ = ('ApplicationRepository',)
 
 class ApplicationRepository(BaseRepository):
 
+    def get_with_highest_exam_scores(
+            self,
+            limit: int,
+    ) -> list[models.Application]:
+        statement = (
+            select(Application, Department.name, Department.id)
+            .join(
+                Department,
+                onclause=Department.id == Application.department_id,
+            )
+            .order_by(Application.exams_score.desc())
+            .limit(limit)
+        )
+        with self._session_factory() as session:
+            rows = session.execute(statement).all()
+        return [
+            models.Application(
+                department_id=department_id,
+                department_name=department_name,
+                applicant_id=application.id,
+                additional_score=application.additional_score,
+                applied_at=application.applied_at,
+                exams_score=application.exams_score,
+            ) for application, department_name, department_id in rows
+        ]
+
     def create(self, department_id: int,
                application: models.ApplicationRow) -> bool:
         statement = (
