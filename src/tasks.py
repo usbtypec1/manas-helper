@@ -41,6 +41,6 @@ async def make_snapshot(
                     application=application,
                 )
                 try:
-                    await bot.send_message(-1001551198132, view.get_text())
+                    await bot.send_message(-1001551198132, view.get_text(), message_thread_id=261318)
                 except TelegramAPIError:
                     pass
